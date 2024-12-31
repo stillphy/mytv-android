@@ -28,12 +28,12 @@ jobs:
           java-version: "17"
 
       - name: 解码生成 jks
-        run: echo $KEYSTORE_BASE64 | base64 -di > app/keystore.jks
+        run: echo $KEYSTORE_BASE64 | base64 -di > tv/keystore.jks
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           
       - name: 检查 keystore 是否生成
-        run: ls -l app/keystore.jks
+        run: ls -l tv/keystore.jks
 
       - name: 生成apk
         run: chmod +x ./gradlew && ./gradlew assembleRelease
@@ -66,7 +66,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir artifacts
-          cp app/build/outputs/apk/release/*.apk artifacts/
+          cp tv/build/outputs/apk/release/*.apk artifacts/
       - name: Upload Release
         uses: ncipollo/release-action@v1
         with:
