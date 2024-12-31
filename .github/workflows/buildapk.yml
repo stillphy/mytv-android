@@ -28,12 +28,12 @@ jobs:
           java-version: "17"
 
       - name: 解码生成 jks
-        run: echo $KEYSTORE_BASE64 | base64 -di > tv/keystore.jks
+        run: echo $KEYSTORE_BASE64 | base64 -di > keystore.jks
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           
       - name: 检查 keystore 是否生成
-        run: ls -l tv/keystore.jks
+        run: ls -l keystore.jks
 
       - name: 生成apk
         run: chmod +x ./gradlew && ./gradlew assembleRelease
