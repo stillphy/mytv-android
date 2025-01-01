@@ -2,6 +2,8 @@ package top.yogiczy.mytv.tv
 
 import android.app.Application
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import coil.ImageLoader
 import coil.ImageLoaderFactory
 import coil.decode.SvgDecoder
@@ -17,18 +19,33 @@ import io.sentry.SentryOptions
 import io.sentry.android.core.SentryAndroid
 import top.yogiczy.mytv.core.data.AppData
 import top.yogiczy.mytv.core.data.utils.Globals
+import top.yogiczy.mytv.tv.ui.utils.Configs
 import kotlin.system.exitProcess
 
 class MyTVApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
-
+        // 获取 Android ID
+        Globals.androidIdStr = getAndroidId()
+        Globals.androidVersion = getAppVersion().toString()
+        Configs.appLastLatestVersion=Globals.androidVersion
         initSentry()
         crashHandle()
         AppData.init(applicationContext)
         UnsafeTrustManager.enableUnsafeTrustManager()
     }
-
+    private fun getAndroidId(): String {
+        return android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+    }
+    private fun getAppVersion(): String? {
+        try {
+            val packageInfo: PackageInfo =
+                packageManager.getPackageInfo(packageName,  0)
+            return packageInfo.versionName
+        } catch (e: PackageManager.NameNotFoundException) {            
+            return ""
+        }
+    }
     override fun newImageLoader(): ImageLoader {
         return ImageLoader(this).newBuilder()
             .logger(DebugLogger())

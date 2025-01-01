@@ -17,6 +17,9 @@ object Globals {
     lateinit var deviceName: String
     var deviceId: String = "Unknown"
 
+    var androidIdStr: String =""
+    var androidVersion: String =""
+    var iptvSourcesEncrypt: Boolean = false
     val json = Json {
         encodeDefaults = true
         explicitNulls = true

@@ -33,6 +33,7 @@ fun QuickOpBtnList(
     onShowMoreSettings: () -> Unit = {},
     onClearCache: () -> Unit = {},
     onUserAction: () -> Unit = {},
+    onShowDashboards: () ->Unit={},
 ) {
     val childPadding = rememberChildPadding()
     val listState = rememberLazyListState()
@@ -129,6 +130,12 @@ fun QuickOpBtnList(
             QuickOpBtn(
                 title = { Text("更多设置") },
                 onSelect = onShowMoreSettings,
+            )
+        }
+        item {
+            QuickOpBtn(
+                title = { Text("主页") },
+                onSelect = onShowDashboards,
             )
         }
     }

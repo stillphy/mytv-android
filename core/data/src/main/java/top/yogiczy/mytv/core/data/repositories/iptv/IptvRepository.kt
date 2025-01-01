@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.core.data.repositories.iptv
 
+import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -10,6 +11,7 @@ import top.yogiczy.mytv.core.data.network.request
 import top.yogiczy.mytv.core.data.repositories.FileCacheRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser
 import top.yogiczy.mytv.core.data.repositories.iptv.parser.IptvParser.ChannelItem.Companion.toChannelGroupList
+import top.yogiczy.mytv.core.data.utils.AesUtil
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Logger
 import kotlin.time.measureTimedValue
@@ -129,7 +131,40 @@ private class IptvRawRepository(private val source: IptvSource) : FileCacheRepos
             log.d("获取直播源: $source")
 
             try {
-                source.url.request { body -> body.string() } ?: ""
+/*
+                // 假设 source.url 是一个 URL 对象
+                val androidId = Globals.androidIdStr
+                // 获取当前 URL 的字符串表示
+                val originalUrl = source.url.toString()
+
+                // 进行 URL 编码Uri需要引入import android.net.Uri
+                val encodedAndroidId = Uri.encode(androidId)
+
+                // 检查原始 URL 是否已包含查询参数
+                val newUrl = if (originalUrl.contains("?")) {
+                    // 使用 & 添加新参数
+                    "$originalUrl&androidId=$encodedAndroidId"
+                } else {
+                    // 使用 ? 添加新参数
+                    "$originalUrl?androidId=$encodedAndroidId"
+                }
+                //log.d("newUrl: $newUrl")
+*/
+                // 假设 source.url 是一个 URL 对象
+                val androidId = Globals.androidIdStr
+                val newUrl =  if (source.url.contains("{androidid}")){
+                    source.url.replace("{androidid}",  androidId)
+                }else{
+                    source.url
+                }
+                // 进行请求
+                val bodyString= newUrl.request { body -> body.string() } ?: ""
+                if(Globals.iptvSourcesEncrypt){
+                    val aes=AesUtil()
+                    aes.decrypt(bodyString)
+                }else
+                    bodyString
+                //source.url.request { body -> body.string() } ?: ""
             } catch (ex: Exception) {
                 log.e("获取直播源（${source.name}）失败", ex)
                 throw HttpException("获取直播源失败，请检查网络连接", ex)

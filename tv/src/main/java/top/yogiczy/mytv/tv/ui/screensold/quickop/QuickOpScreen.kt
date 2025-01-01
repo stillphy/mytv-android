@@ -61,6 +61,7 @@ fun QuickOpScreen(
     onClearCache: () -> Unit = {},
     toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
     onClose: () -> Unit = {},
+    toDashboardScreen: () -> Unit = {},
 ) {
     val screenAutoCloseState = rememberScreenAutoCloseState(onTimeout = onClose)
 
@@ -95,6 +96,7 @@ fun QuickOpScreen(
             onShowMoreSettings = { toSettingsScreen(null) },
             onClearCache = onClearCache,
             onUserAction = { screenAutoCloseState.active() },
+            onShowDashboards = {  toDashboardScreen() },
         )
     }
 }
@@ -160,6 +162,7 @@ private fun QuickOpScreenBottom(
     onShowMoreSettings: () -> Unit = {},
     onClearCache: () -> Unit = {},
     onUserAction: () -> Unit = {},
+    onShowDashboards: ()->Unit={},
 ) {
     val childPadding = rememberChildPadding()
 
@@ -194,6 +197,7 @@ private fun QuickOpScreenBottom(
                 onShowSubtitleTracks = onShowSubtitleTracks,
                 onClearCache = onClearCache,
                 onUserAction = onUserAction,
+                onShowDashboards = onShowDashboards,
             )
         }
     }

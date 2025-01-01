@@ -20,6 +20,7 @@ import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.chanelGroup
 import top.yogiczy.mytv.core.data.entities.channel.ChannelList
 import top.yogiczy.mytv.core.data.entities.epg.EpgList
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.tv.BuildConfig
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.rememberDoubleBackPressedExitState
@@ -118,7 +119,9 @@ fun MainScreen(
             }
 
             if (!updateViewModel.isUpdateAvailable) return@launch
-            if (settingsViewModel.appLastLatestVersion == updateViewModel.latestRelease.version) return@launch
+
+            if(Globals.androidVersion == updateViewModel.latestRelease.version) return@launch
+            //if (settingsViewModel.appLastLatestVersion == updateViewModel.latestRelease.version) return@launch
 
             settingsViewModel.appLastLatestVersion = updateViewModel.latestRelease.version
             if (settingsViewModel.updateForceRemind) {
@@ -216,6 +219,9 @@ fun MainScreen(
                                     Snackbar.show("再按一次退出直播")
                                 }
                             }
+                        },
+                        toDashboardScreen = {
+                            navController.navigateSingleTop(Screens.Dashboard())
                         },
                     )
                 }

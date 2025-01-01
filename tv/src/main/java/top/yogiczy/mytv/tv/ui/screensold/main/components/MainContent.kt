@@ -58,6 +58,7 @@ fun MainContent(
     onChannelFavoriteToggle: (Channel) -> Unit = {},
     toSettingsScreen: (SettingsSubCategories?) -> Unit = {},
     onBackPressed: () -> Unit = {},
+    toDashboardScreen: () -> Unit = {},
 ) {
     val coroutineScope = rememberCoroutineScope()
 
@@ -406,6 +407,11 @@ fun MainContent(
                 }
             },
             onClose = { mainContentState.isQuickOpScreenVisible = false },
+            toDashboardScreen = {
+                //启动DashboardScreen
+                mainContentState.isQuickOpScreenVisible = false
+                toDashboardScreen()
+            },
         )
     }
 
