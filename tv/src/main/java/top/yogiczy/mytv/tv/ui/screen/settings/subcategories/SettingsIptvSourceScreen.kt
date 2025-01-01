@@ -242,7 +242,7 @@ private fun IptvSourceItem(
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(iptvSource.url)
+                //Text(iptvSource.url)
 
                 if (iptvSourceDetail is IptvSourceDetail.Ready) {
                     Text(
