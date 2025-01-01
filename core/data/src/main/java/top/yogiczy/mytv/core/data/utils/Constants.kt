@@ -31,7 +31,7 @@ object Constants {
         listOf(
             IptvSource(
                 name = "默认直播源 fanmingming（IPV6）",
-                url = "https://live.fanmingming.com/tv/m3u/ipv6.m3u",
+                url = "https://live.fanmingming.cn/tv/m3u/ipv6.m3u",
             ),
             IptvSource(
                 name = "默认直播源 YanG-1989（电视）",
@@ -43,7 +43,7 @@ object Constants {
     /**
      * 直播源缓存时间（毫秒）
      */
-    const val IPTV_SOURCE_CACHE_TIME = 1000 * 60 * 60 * 24L // 24小时
+    const val IPTV_SOURCE_CACHE_TIME = 0L //1000 * 60 * 60 * 24L // 24小时
 
     /**
      * 节目单来源
@@ -52,7 +52,7 @@ object Constants {
         listOf(
             EpgSource(
                 name = "默认节目单 fanmingming",
-                url = "https://live.fanmingming.com/e.xml",
+                url = "https://live.fanmingming.cn/e.xml",
             ),
             EpgSource(
                 name = "默认节目单 老张的EPG",
@@ -80,7 +80,7 @@ object Constants {
      * {name|uppercase} 转成大写
      *
      */
-    const val CHANNEL_LOGO_PROVIDER = "https://live.fanmingming.com/tv/{name|uppercase}.png"
+    const val CHANNEL_LOGO_PROVIDER = "https://live.fanmingming.cn/tv/{name|uppercase}.png"
 
     /**
      * GitHub加速代理地址
