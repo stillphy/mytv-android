@@ -16,6 +16,7 @@ import top.yogiczy.mytv.core.data.entities.epgsource.EpgSource
 import top.yogiczy.mytv.core.data.entities.epgsource.EpgSourceList
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSourceList
+import top.yogiczy.mytv.core.data.utils.Constants
 import top.yogiczy.mytv.tv.sync.CloudSyncProvider
 import top.yogiczy.mytv.tv.ui.screen.Screens
 import top.yogiczy.mytv.tv.ui.screen.components.AppThemeDef
@@ -65,6 +66,17 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _appStartupScreen = value
             Configs.appStartupScreen = value
+            afterSetWhenCloudSyncAutoPull()
+        }
+    private var _appEnableRemoteConfig by mutableStateOf(Configs.appEnableRemoteConfig)
+    var appEnableRemoteConfig: Boolean
+        get() = _appEnableRemoteConfig
+        set(value) {
+            _appEnableRemoteConfig = value
+            Configs.appEnableRemoteConfig = value
+            Configs.iptvSourceCurrent= Constants.IPTV_SOURCE_LIST.first()
+            Configs.iptvChannelLastPlay= Channel()
+            Configs.lastIptvSourceName=Configs.iptvSourceCurrent.name
             afterSetWhenCloudSyncAutoPull()
         }
 

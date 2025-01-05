@@ -38,6 +38,9 @@ object Configs {
         /** 打开直接进入直播 */
         APP_STARTUP_SCREEN,
 
+        /** 打开使用远程配置 */
+        APP_ENABLE_REMOTE_CONFIG,
+
         /** ==================== 调式 ==================== */
         /** 开发者模式 */
         DEBUG_DEVELOPER_MODE,
@@ -228,6 +231,12 @@ object Configs {
 
         /** 肥羊 AllInOne 文件路径 */
         FEIYANG_ALLINONE_FILE_PATH,
+
+        /** 记录上次的IPTV源名称 */
+        LAST_IPTV_SOURCE_NAME,
+
+        /** 记录更新URL地址 */
+        UPDATE_URL,
     }
 
     /** ==================== 应用 ==================== */
@@ -255,6 +264,11 @@ object Configs {
     var appStartupScreen: String
         get() = SP.getString(KEY.APP_STARTUP_SCREEN.name, Screens.Live.name) //Screens.Dashboard.name
         set(value) = SP.putString(KEY.APP_STARTUP_SCREEN.name, value)
+
+    /** 打开使用远程配置 */
+    var appEnableRemoteConfig: Boolean
+        get() = SP.getBoolean(KEY.APP_ENABLE_REMOTE_CONFIG.name, true) //Screens.Dashboard.name
+        set(value) = SP.putBoolean(KEY.APP_ENABLE_REMOTE_CONFIG.name, value)
 
     /** ==================== 调式 ==================== */
     /** 开发者模式 */
@@ -484,7 +498,7 @@ object Configs {
     /** ==================== 更新 ==================== */
     /** 更新强提醒 */
     var updateForceRemind: Boolean
-        get() = SP.getBoolean(KEY.UPDATE_FORCE_REMIND.name, false)
+        get() = SP.getBoolean(KEY.UPDATE_FORCE_REMIND.name, true)
         set(value) = SP.putBoolean(KEY.UPDATE_FORCE_REMIND.name, value)
 
     /** 更新通道 */
@@ -619,6 +633,17 @@ object Configs {
     var feiyangAllInOneFilePath: String
         get() = SP.getString(KEY.FEIYANG_ALLINONE_FILE_PATH.name, "")
         set(value) = SP.putString(KEY.FEIYANG_ALLINONE_FILE_PATH.name, value)
+
+    /** 记录上次的IPTV源名称 */
+    var lastIptvSourceName: String
+        get() = SP.getString(KEY.LAST_IPTV_SOURCE_NAME.name,"")
+        set(value)=SP.putString(KEY.LAST_IPTV_SOURCE_NAME.name,value)
+
+    /** 记录更新URL地址 */
+    var updateUrl:String
+        get()=SP.getString(KEY.UPDATE_URL.name,"")
+        set(value) = SP.putString(KEY.UPDATE_URL.name,value)
+
 
     enum class UiTimeShowMode(val value: Int, val label: String) {
         /** 隐藏 */

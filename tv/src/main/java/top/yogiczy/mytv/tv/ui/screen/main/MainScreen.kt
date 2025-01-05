@@ -120,7 +120,7 @@ fun MainScreen(
 
             if (!updateViewModel.isUpdateAvailable) return@launch
 
-            if(Globals.androidVersion == updateViewModel.latestRelease.version) return@launch
+            if(Globals.apkVersion == updateViewModel.latestRelease.version) return@launch
             //if (settingsViewModel.appLastLatestVersion == updateViewModel.latestRelease.version) return@launch
 
             settingsViewModel.appLastLatestVersion = updateViewModel.latestRelease.version

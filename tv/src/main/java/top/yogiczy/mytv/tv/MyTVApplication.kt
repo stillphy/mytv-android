@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.content.pm.PackageInfo
@@ -20,6 +21,7 @@ import io.sentry.android.core.SentryAndroid
 import top.yogiczy.mytv.core.data.AppData
 import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.tv.ui.utils.Configs
+import top.yogiczy.mytv.tv.ui.utils.getMacAddress
 import kotlin.system.exitProcess
 
 class MyTVApplication : Application(), ImageLoaderFactory {
@@ -27,15 +29,39 @@ class MyTVApplication : Application(), ImageLoaderFactory {
         super.onCreate()
         // 获取 Android ID
         Globals.androidIdStr = getAndroidId()
-        Globals.androidVersion = getAppVersion().toString()
-        Configs.appLastLatestVersion=Globals.androidVersion
+        Globals.apkVersion = getAppVersion().toString()
+        Configs.appLastLatestVersion=Globals.apkVersion
+        Globals.deviceMac=getMacAddress(this)
+        Globals.apkPackageName=getAppPackageName()
+        Globals.apkAppName=getAppName()?:""
         initSentry()
         crashHandle()
         AppData.init(applicationContext)
         UnsafeTrustManager.enableUnsafeTrustManager()
     }
+    @SuppressLint("HardwareIds")
     private fun getAndroidId(): String {
         return android.provider.Settings.Secure.getString(contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+    }
+    private fun getAppName(): String? {
+        try {
+            val packageManager = this.packageManager
+            val packageInfo = packageManager.getPackageInfo(this.packageName,  0)
+            val applicationInfo = packageInfo.applicationInfo
+            return applicationInfo?.loadLabel(packageManager).toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+    private fun getAppPackageName(): String {
+        try {
+            val packageInfo: PackageInfo =
+                packageManager.getPackageInfo(packageName,  0)
+            return packageInfo.packageName
+        } catch (e: PackageManager.NameNotFoundException) {
+            return ""
+        }
     }
     private fun getAppVersion(): String? {
         try {

@@ -14,6 +14,7 @@ import top.yogiczy.mytv.core.util.utils.Downloader
 import top.yogiczy.mytv.core.util.utils.compareVersion
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
+import top.yogiczy.mytv.tv.ui.utils.Configs
 import java.io.File
 
 class UpdateViewModel(
@@ -44,7 +45,12 @@ class UpdateViewModel(
             log.i("开始检查更新（${channel}）...")
 
             _isChecking = true
-            val releaseUrl = Constants.GIT_RELEASE_LATEST_URL[channel] ?: return
+            val releaseUrl = if (Configs.updateUrl.isEmpty())  {
+                Constants.GIT_RELEASE_LATEST_URL[channel]?: return
+            } else {
+                Configs.updateUrl
+            }
+
             _latestRelease = GitRepository().latestRelease(releaseUrl)
             _isUpdateAvailable = _latestRelease.version.compareVersion(currentVersion) > 0
 

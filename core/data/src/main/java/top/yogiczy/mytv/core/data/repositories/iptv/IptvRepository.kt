@@ -1,6 +1,7 @@
 package top.yogiczy.mytv.core.data.repositories.iptv
 
 import android.net.Uri
+import android.os.Build
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -131,25 +132,6 @@ private class IptvRawRepository(private val source: IptvSource) : FileCacheRepos
             log.d("获取直播源: $source")
 
             try {
-/*
-                // 假设 source.url 是一个 URL 对象
-                val androidId = Globals.androidIdStr
-                // 获取当前 URL 的字符串表示
-                val originalUrl = source.url.toString()
-
-                // 进行 URL 编码Uri需要引入import android.net.Uri
-                val encodedAndroidId = Uri.encode(androidId)
-
-                // 检查原始 URL 是否已包含查询参数
-                val newUrl = if (originalUrl.contains("?")) {
-                    // 使用 & 添加新参数
-                    "$originalUrl&androidId=$encodedAndroidId"
-                } else {
-                    // 使用 ? 添加新参数
-                    "$originalUrl?androidId=$encodedAndroidId"
-                }
-                //log.d("newUrl: $newUrl")
-*/
                 // 假设 source.url 是一个 URL 对象
                 val androidId = Globals.androidIdStr
                 val newUrl =  if (source.url.contains("{androidid}")){
@@ -159,11 +141,22 @@ private class IptvRawRepository(private val source: IptvSource) : FileCacheRepos
                 }
                 // 进行请求
                 val bodyString= newUrl.request { body -> body.string() } ?: ""
-                if(Globals.iptvSourcesEncrypt){
-                    val aes=AesUtil()
-                    aes.decrypt(bodyString)
-                }else
+                // 尝试解密
+                try {
+                    if(Globals.remoteEncryptEnable && Globals.remoteEncryptKey.isNotEmpty()){
+                        val aes=AesUtil(Globals.remoteEncryptKey,Globals.apkAppName,Globals.apkPackageName)
+                        log.d("尝试远程Key解密（${source.name}）" )
+                        aes.decrypt(bodyString)
+                    }else
+                    {
+                        val aes=AesUtil(Globals.androidIdStr,Globals.apkAppName,Globals.apkPackageName)
+                        log.d("尝试本地Key解密（${source.name}）" )
+                        aes.decrypt(bodyString)
+                    }
+                } catch (ex: Exception){
+                    log.e("解密（${source.name}）失败，直接返回结果" )
                     bodyString
+                }
                 //source.url.request { body -> body.string() } ?: ""
             } catch (ex: Exception) {
                 log.e("获取直播源（${source.name}）失败", ex)

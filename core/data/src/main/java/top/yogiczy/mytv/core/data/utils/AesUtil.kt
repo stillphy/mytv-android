@@ -1,13 +1,24 @@
 package top.yogiczy.mytv.core.data.utils
 
+import android.annotation.SuppressLint
+import android.os.Build
+import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import java.util.Base64
 
+@OptIn(ExperimentalStdlibApi::class)
+fun String.md5(): String {
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(this.toByteArray())
+    return digest.toHexString()
+}
+val log = Logger.create("AesUtil")
+@SuppressLint("GetInstance")
 class AesUtil(
     private val sig: String = "12315",
-    private val appname: String = "mytv",
-    private val packagename: String = "com.mytv",
+    private val appName: String = "mytv",
+    private val packageName: String = "com.mytv",
     private val method: String = "AES/ECB/PKCS5Padding"
 ) {
 
@@ -16,9 +27,12 @@ class AesUtil(
 
     init {
         // 生成密钥
-        val key = (sig + appname + packagename + "AD80F93B542B")
+        val key = (sig + appName + packageName + "AD80F93B542B")
+        var md5Str=key.md5()
+        md5Str=(md5Str+appName + packageName).md5()
         // 截取16字节的子字符串作为密钥，以符合AES-128要求
-        val processedKey = key.substring(0, 16).toByteArray(Charsets.UTF_8)
+        val processedKey = md5Str.substring(0, 16).toByteArray(Charsets.UTF_8)
+
         secretKey = SecretKeySpec(processedKey, "AES")
         cipher = Cipher.getInstance(method)
     }

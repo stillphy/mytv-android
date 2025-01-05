@@ -1,5 +1,6 @@
 package top.yogiczy.mytv.tv.ui.screen.main
 
+
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import top.yogiczy.mytv.core.data.entities.channel.Channel
 import top.yogiczy.mytv.core.data.entities.channel.ChannelFavoriteList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList
 import top.yogiczy.mytv.core.data.entities.channel.ChannelGroupList.Companion.channelList
@@ -29,15 +31,18 @@ import top.yogiczy.mytv.core.data.entities.iptvsource.IptvSource
 import top.yogiczy.mytv.core.data.network.HttpException
 import top.yogiczy.mytv.core.data.repositories.epg.EpgRepository
 import top.yogiczy.mytv.core.data.repositories.iptv.IptvRepository
+import top.yogiczy.mytv.core.data.utils.AesUtil
 import top.yogiczy.mytv.core.data.utils.ChannelAlias
 import top.yogiczy.mytv.core.data.utils.ChannelUtil
 import top.yogiczy.mytv.core.data.utils.Constants
+import top.yogiczy.mytv.core.data.utils.Globals
 import top.yogiczy.mytv.core.data.utils.Logger
 import top.yogiczy.mytv.tv.sync.CloudSync
 import top.yogiczy.mytv.tv.sync.CloudSyncData
 import top.yogiczy.mytv.tv.ui.material.Snackbar
 import top.yogiczy.mytv.tv.ui.material.SnackbarType
 import top.yogiczy.mytv.tv.ui.utils.Configs
+import top.yogiczy.mytv.tv.ui.utils.GetRemoteConfigUtil
 import java.util.Calendar
 
 class MainViewModel : ViewModel() {
@@ -47,15 +52,26 @@ class MainViewModel : ViewModel() {
     val uiState: StateFlow<MainUiState> = _uiState.asStateFlow()
 
     private var _lastJob: Job? = null
+    private var _loadConfigJob: Job? = null
 
     var needRefresh: () -> Unit = {}
 
     init {
         viewModelScope.launch {
+            loadRemoteConfig()
+            _loadConfigJob?.join()
+            //pullRemoteConfig()
             pullCloudSyncData()
             init()
             _lastJob?.join()
             refreshOtherIptvSource()
+        }
+    }
+
+    private fun loadRemoteConfig(){
+        _loadConfigJob?.cancel()
+        _loadConfigJob = viewModelScope.launch {
+            pullRemoteConfig()
         }
     }
 
@@ -66,6 +82,34 @@ class MainViewModel : ViewModel() {
             refreshChannel()
             refreshEpg()
             mergeEpgMetadata()
+
+        }
+    }
+    private fun pullRemoteConfig(){
+        _uiState.value = MainUiState.Loading("拉取远程配置")
+        if (Configs.appEnableRemoteConfig) {
+            viewModelScope.launch {
+                try {
+                    var syncUrl = Globals.remoteConfigUrl
+                    try {
+                        //尝试普通aes解码
+                        val aes= AesUtil()
+                        syncUrl=aes.decrypt(syncUrl)
+                    }catch (e:Exception){
+                        //
+                    }
+                    GetRemoteConfigUtil.postSettingsToCloud(syncUrl)
+                    // 处理响应，例如更新 UI 或记录日志
+                    //Snackbar.show("拉取远程配置")
+                } catch (e: Exception) {
+                    // 处理错误，例如显示错误信息给用户
+                    //Snackbar.show("拉取远程配置失败，${e.message}")
+                    Configs.iptvSourceCurrent= Constants.IPTV_SOURCE_LIST.first()
+                    Configs.iptvChannelLastPlay= Channel()
+                    Configs.lastIptvSourceName=Configs.iptvSourceCurrent.name
+                }
+            }
+            needRefresh()
         }
     }
 
@@ -97,7 +141,7 @@ class MainViewModel : ViewModel() {
                 if (e !is HttpException) return@retryWhen false
 
                 _uiState.value =
-                    MainUiState.Loading("加载直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
+                    MainUiState.Loading("加载${Configs.iptvSourceCurrent.name}直播源(${attempt + 1}/${Constants.NETWORK_RETRY_COUNT})...")
                 delay(Constants.NETWORK_RETRY_INTERVAL)
                 true
             }

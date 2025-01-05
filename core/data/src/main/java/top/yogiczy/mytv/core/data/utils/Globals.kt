@@ -17,9 +17,16 @@ object Globals {
     lateinit var deviceName: String
     var deviceId: String = "Unknown"
 
+    var deviceMac: String =""
     var androidIdStr: String =""
-    var androidVersion: String =""
-    var iptvSourcesEncrypt: Boolean = false
+    var apkAppName:String =""
+    var apkPackageName:String =""
+    var apkVersion: String =""
+    var enableRemoteConfig: Boolean = true
+    var remoteConfigUrl: String ="http://127.0.0.1:20243/app/m3utotxt/getconf.php"
+    var remoteEncryptKey:String=""
+    var remoteEncryptEnable:Boolean=false
+
     val json = Json {
         encodeDefaults = true
         explicitNulls = true

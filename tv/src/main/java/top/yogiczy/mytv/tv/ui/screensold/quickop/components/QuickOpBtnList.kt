@@ -128,7 +128,7 @@ fun QuickOpBtnList(
         }
         item {
             QuickOpBtn(
-                title = { Text("更多设置") },
+                title = { Text("设置") },
                 onSelect = onShowMoreSettings,
             )
         }

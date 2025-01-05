@@ -57,6 +57,19 @@ fun SettingsAppScreen(
 
         item {
             SettingsListItem(
+                headlineContent = "使用远程配置",
+                trailingContent = {
+                    Switch(settingsViewModel.appEnableRemoteConfig, null)
+
+                },
+                onSelect = {
+                    settingsViewModel.appEnableRemoteConfig = !settingsViewModel.appEnableRemoteConfig
+                },
+            )
+        }
+
+        item {
+            SettingsListItem(
                 headlineContent = "打开直接进入直播",
                 trailingContent = {
                     Switch(settingsViewModel.appStartupScreen == Screens.Live.name, null)
