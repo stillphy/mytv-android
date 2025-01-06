@@ -100,16 +100,23 @@ class MainViewModel : ViewModel() {
                     }
                     GetRemoteConfigUtil.postSettingsToCloud(syncUrl)
                     // 处理响应，例如更新 UI 或记录日志
-                    //Snackbar.show("拉取远程配置")
+                    Snackbar.show("拉取远程配置")
                 } catch (e: Exception) {
                     // 处理错误，例如显示错误信息给用户
-                    //Snackbar.show("拉取远程配置失败，${e.message}")
+                    Snackbar.show("拉取远程配置失败，${e.message}")
                     Configs.iptvSourceCurrent= Constants.IPTV_SOURCE_LIST.first()
                     Configs.iptvChannelLastPlay= Channel()
                     Configs.lastIptvSourceName=Configs.iptvSourceCurrent.name
+                    refreshChannel()
                 }
             }
             needRefresh()
+        }else{
+            if(Configs.lastIptvSourceName != Configs.iptvSourceCurrent.name){
+                Configs.iptvChannelLastPlay= Channel()
+                Configs.lastIptvSourceName=Configs.iptvSourceCurrent.name
+                needRefresh()
+            }
         }
     }
 

@@ -74,9 +74,11 @@ class SettingsViewModel : ViewModel() {
         set(value) {
             _appEnableRemoteConfig = value
             Configs.appEnableRemoteConfig = value
-            Configs.iptvSourceCurrent= Constants.IPTV_SOURCE_LIST.first()
-            Configs.iptvChannelLastPlay= Channel()
-            Configs.lastIptvSourceName=Configs.iptvSourceCurrent.name
+            if(!Configs.appEnableRemoteConfig){
+                Configs.iptvSourceCurrent = Constants.IPTV_SOURCE_LIST.first()
+                //Configs.iptvChannelLastPlay = Channel()
+                //Configs.lastIptvSourceName = Configs.iptvSourceCurrent.name
+            }
             afterSetWhenCloudSyncAutoPull()
         }
 
